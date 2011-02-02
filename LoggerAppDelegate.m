@@ -23,7 +23,12 @@
 								[logger release];   */   
 	//NSString *log = [NSString stringWithFormat:@"%@", [NSData dataWithContentsOfFile:@"/Users/alto/Library/Logs/com.fuelcollective.Dust.log"]];
 	//[log writeToFile:@"/Users/alto/Library/Logs/com.fuelcollective.Dust.hex.log" atomically:YES];
-	//FCCLog(@"%@", [NSData dataWithContentsOfFile:@"/Users/alto/Library/Logs/com.fuelcollective.Dust.log"]);
+	//FCCLog(@"%@", [NSString stringWithContentsOfFile:@"/Users/alto/Library/Logs/GoogleSoftwareUpdateAgent.log"]);
+	
+	
+	for (NSString *str in [[NSProcessInfo processInfo] environment]){
+		FCCLog(@"%@ : %@", str, [[[NSProcessInfo processInfo] environment] objectForKey:str]);
+	}
 	
 	
 	//[logger release];

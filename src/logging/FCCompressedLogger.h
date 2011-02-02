@@ -65,6 +65,10 @@ typedef struct {
  */
 -(void)compressedLogger:(FCCompressedLogger*)logger compressString:(NSString*)formattedString toFile:(FILE*)file;
 
+
+/** Is called before the file is closed. Output some EOF char or something. */
+-(void)compressedLogger:(FCCompressedLogger*)logger fileWillBeClosed:(FILE*)file;
+
 /** Decompress the string. The original position in file is stored and restored. */
 -(NSString*)compressedLogger:(FCCompressedLogger*)logger decompressFromFile:(FILE*)file startingPosition:(uint64_t)pos length:(uint32_t)len;
 

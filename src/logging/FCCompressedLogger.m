@@ -184,7 +184,7 @@ static FCCompressedLogger *_staticLogger;
 	//Save the original position:
 	int pos = ftell(_fileDesc);
 	
-	NSLog(@"Saving header. Original position: %i. Runlist position: %i.", pos, _header._runlist_position);
+	//NSLog(@"Saving header. Original position: %i. Runlist position: %i.", pos, _header._runlist_position);
 	
 	//Go to the beginning of the file
 	fseek(_fileDesc, 0, SEEK_SET);
@@ -201,7 +201,7 @@ static FCCompressedLogger *_staticLogger;
 	//Remember and restore current position in the file.
 	long pos = ftell(_fileDesc);
 	
-	NSLog(@"Writing run list - number of items: %i, runlist position %i", [_runlist count], (int)_header._runlist_position);
+	//NSLog(@"Writing run list - number of items: %i, runlist position %i", [_runlist count], (int)_header._runlist_position);
 	
 	//Write the number of runs
 	fwrite(&_rlist_header._number_of_runs, sizeof(uint32_t), 1, _fileDesc);

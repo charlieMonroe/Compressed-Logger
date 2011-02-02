@@ -304,6 +304,47 @@ huff_tree_node_t* _FCHuffmanTreeSibling(huff_tree_node_t *node){
 	}
 }
 
+/** Fills the rest of the bits with some non-sense. */
+-(void)closeFile:(FILE*)file{
+	if (_usedBits == 0){
+		//No need to fill the bits
+		return;
+	}
+	
+	while (_usedBits < 8){
+		if (_list[0] == NULL){
+			//There isn't a zero-char, so let's add it
+			[self _updateTreeWithChar:0];
+		}
+		
+		//Now there is a \0 char, so try to output as much of it as possible
+		huff_tree_node_t* node = _list[0];
+		
+		uint8_t bitCount = 0;
+		char bitBuffer[HUFFMAN_CHAR_SIZE];
+		while (node->parent != NULL){
+			huff_tree_node_t *par = (huff_tree_node_t *)node->parent;
+			if (node == (huff_tree_node_t *)par->leftChild){
+				//The node is a left child, output 0
+				bitBuffer[bitCount] = 0;
+			}else{
+				bitBuffer[bitCount] = 1;
+			}
+			
+			++bitCount;
+			node = (huff_tree_node_t *)node->parent;
+		}
+		
+		//The buffer is in the reverse order
+		while (bitCount > 0 && _usedBits < 8){
+			//We need to decrement it first.
+			--bitCount;
+			[self _outputBit:bitBuffer[bitCount] toFile:file];
+		}
+		
+	}
+}
+
 /** Compresses @c and outputs it into @file. */
 -(void)compressChar:(unsigned char)c toFile:(FILE*)file{
 	//First, let's see if it's already in the tree
@@ -371,6 +412,8 @@ huff_tree_node_t* _FCHuffmanTreeSibling(huff_tree_node_t *node){
 				}
 			}
 			
+			_FCCheckBuffer;
+						
 			[aStr appendFormat:@"%c", letter];
 			[self _updateTreeWithChar:letter];
 			
@@ -456,6 +499,7 @@ huff_tree_node_t* _FCHuffmanTreeSibling(huff_tree_node_t *node){
 	//Get to the position
 	if ([_alg hasUnwrittenData] != 0){
 		//There are some bits left in the previous byte!
+		NSLog(@"going back");
 		fseek(file, ftell(file) - 1, SEEK_SET);
 	}
 	
@@ -483,6 +527,9 @@ huff_tree_node_t* _FCHuffmanTreeSibling(huff_tree_node_t *node){
 	
 	//And keep decompressing.
 	return [alg decompressStringInFile:file ofLength:len];
+}
+-(void)compressedLogger:(FCCompressedLogger*)logger fileWillBeClosed:(FILE*)file{
+	[_alg closeFile:file];
 }
 -(void)dealloc{
 	[_alg release];
